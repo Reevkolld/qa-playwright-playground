@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "check:no-wait-timeout": "node scripts/check-no-wait-timeout.js"
+  },
   "keywords": [],
   "type": "commonjs",
   "devDependencies": {
