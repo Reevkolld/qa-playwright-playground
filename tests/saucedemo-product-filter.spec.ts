@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { byTestId } from './utils/by-test-id';
 
 test('locate card via filter, add to cart, verify state', async ({ page }) => {
     await page.goto('https://www.saucedemo.com/');
@@ -17,7 +18,7 @@ test('locate card via filter, add to cart, verify state', async ({ page }) => {
 
     await page.getByRole('button', {name: 'Add to cart'}).click();
 
-    await expect(page.getByTestId('shopping-cart-badge')).toHaveText('1');
+    await expect(byTestId(page, 'shopping-cart-badge')).toHaveText('1');
     await expect(page.getByRole('button', {name: 'Remove'})).toBeVisible();
 
 });
