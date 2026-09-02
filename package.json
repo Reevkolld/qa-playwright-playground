@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "check:no-wait-timeout": "node scripts/check-no-wait-timeout.js",
     "test": "playwright test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "check": "node scripts/check.js",
+    "check:no-wait-timeout": "node scripts/check-no-wait-timeout.js",
     "check:b12": "node scripts/check.js b12",
     "check:c1": "node scripts/check.js c1",
     "check:c2": "node scripts/check.js c2",
