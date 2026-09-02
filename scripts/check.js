@@ -25,7 +25,8 @@ function walk(dir, ext, acc = []) {
   for (const entry of fs.readdirSync(full, { withFileTypes: true })) {
     const rel = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      if (['node_modules', '.git', 'test-results', 'playwright-report'].includes(entry.name)) continue;
+      if (['node_modules', '.git', 'test-results', 'playwright-report'].includes(entry.name))
+        continue;
       walk(rel, ext, acc);
     } else if (!ext || entry.name.endsWith(ext)) {
       acc.push(rel);
@@ -45,9 +46,14 @@ const stripComments = (t) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\
 const configRaw = () => read('playwright.config.ts');
 const config = () => stripComments(configRaw());
 const pkg = () => {
-  try { return JSON.parse(read('package.json')); } catch { return {}; }
+  try {
+    return JSON.parse(read('package.json'));
+  } catch {
+    return {};
+  }
 };
-const workflows = () => walk('.github/workflows', '.yml').concat(walk('.github/workflows', '.yaml'));
+const workflows = () =>
+  walk('.github/workflows', '.yml').concat(walk('.github/workflows', '.yaml'));
 
 function countTests(text) {
   const m = text.match(/^[ \t]*test(\.only|\.fixme|\.skip)?\s*\(/gm);
@@ -60,7 +66,11 @@ function hosts(text) {
 }
 
 function git(cmd) {
-  try { return execSync(`git --no-optional-locks ${cmd}`, { cwd: ROOT, encoding: 'utf8' }); } catch { return ''; }
+  try {
+    return execSync(`git --no-optional-locks ${cmd}`, { cwd: ROOT, encoding: 'utf8' });
+  } catch {
+    return '';
+  }
 }
 
 function tryRun(cmd) {
@@ -86,7 +96,11 @@ const CHECKS = {
       rule(n >= 20, `тестов: ${n} (нужно 20+)`, 'добавь ещё файл с тестами'),
       rule(h.length >= 2, `разных сайтов: ${h.length} — ${h.join(', ')}`, 'нужен второй сайт'),
       rule(!/waitForTimeout/.test(text), 'нет waitForTimeout'),
-      rule(!/expect\s*\(\s*await/.test(text), 'нет ассертов вида expect(await ...)', 'это не web-first ассерт, см. C4'),
+      rule(
+        !/expect\s*\(\s*await/.test(text),
+        'нет ассертов вида expect(await ...)',
+        'это не web-first ассерт, см. C4',
+      ),
       rule(!/page\.locator\(['"`]\./.test(text), 'нет CSS-локаторов по классам'),
     ];
   },
@@ -95,7 +109,11 @@ const CHECKS = {
     const files = walk('docs', '.md').filter((f) => /trace/i.test(path.basename(f)));
     const text = readAll(files);
     return [
-      rule(files.length > 0, `разбор trace: ${files.length} файл(ов)`, 'создай docs/trace-<тест>.md'),
+      rule(
+        files.length > 0,
+        `разбор trace: ${files.length} файл(ов)`,
+        'создай docs/trace-<тест>.md',
+      ),
       rule(/Симптом|Symptom/i.test(text), 'есть раздел «Симптом»'),
       rule(/Причина|Root cause/i.test(text), 'есть раздел «Причина»'),
       rule(/Фикс|Fix/i.test(text), 'есть раздел «Фикс»'),
@@ -109,7 +127,11 @@ const CHECKS = {
       rule(notes.length > 0, 'есть docs/debug-notes.md'),
       rule(/--debug|Inspector/i.test(notes), 'упомянут --debug / Inspector'),
       rule(/--ui|UI Mode/i.test(notes), 'упомянут --ui / UI Mode'),
-      rule(!/page\.pause\(/.test(specText()), 'нет забытых page.pause() в тестах', 'в CI это подвесит прогон'),
+      rule(
+        !/page\.pause\(/.test(specText()),
+        'нет забытых page.pause() в тестах',
+        'в CI это подвесит прогон',
+      ),
     ];
   },
 
@@ -120,8 +142,14 @@ const CHECKS = {
       rule(/expect\s*:\s*\{/.test(c), 'задан expect.timeout'),
       rule(/actionTimeout|navigationTimeout/.test(c), 'задан action- или navigationTimeout'),
       rule(/retries\s*:\s*process\.env\.CI/.test(c), 'retries зависит от CI'),
-      rule(!/Read environment variables|Mobile Chrome|branded browsers/i.test(configRaw()), 'убран закомментированный шаблон'),
-      rule(/[Кк]онфигурац|[Cc]onfiguration/.test(readme()), 'в README есть раздел про конфигурацию'),
+      rule(
+        !/Read environment variables|Mobile Chrome|branded browsers/i.test(configRaw()),
+        'убран закомментированный шаблон',
+      ),
+      rule(
+        /[Кк]онфигурац|[Cc]onfiguration/.test(readme()),
+        'в README есть раздел про конфигурацию',
+      ),
     ];
   },
 
@@ -132,7 +160,11 @@ const CHECKS = {
       rule(files.length > 0, `flaky-разборов: ${files.length}`, 'создай docs/flaky-<тест>.md'),
       rule(/Гипотез|Hypoth/i.test(text), 'есть раздел «Гипотезы»'),
       rule(/Причина|Root cause/i.test(text), 'есть раздел «Причина»'),
-      rule(/\d+\s*(из|of|\/)\s*\d+/.test(text), 'есть числовая оценка частоты падений', 'без цифр нестабильность не доказана'),
+      rule(
+        /\d+\s*(из|of|\/)\s*\d+/.test(text),
+        'есть числовая оценка частоты падений',
+        'без цифр нестабильность не доказана',
+      ),
       rule(!/expect\s*\(\s*await/.test(specText()), 'нет ассертов вида expect(await ...)'),
     ];
   },
@@ -154,8 +186,14 @@ const CHECKS = {
     return [
       rule(exists('pages/base.page.ts'), 'есть pages/base.page.ts'),
       rule(/abstract\s+class/.test(text), 'базовый класс объявлен abstract'),
-      rule(pages.filter((f) => f.endsWith('.page.ts')).length >= 3, `страниц: ${pages.filter((f) => f.endsWith('.page.ts')).length} (нужно 3+)`),
-      rule((text.match(/extends\s+BasePage/g) || []).length >= 2, 'минимум две страницы наследуют базовый класс'),
+      rule(
+        pages.filter((f) => f.endsWith('.page.ts')).length >= 3,
+        `страниц: ${pages.filter((f) => f.endsWith('.page.ts')).length} (нужно 3+)`,
+      ),
+      rule(
+        (text.match(/extends\s+BasePage/g) || []).length >= 2,
+        'минимум две страницы наследуют базовый класс',
+      ),
     ];
   },
 
@@ -185,12 +223,17 @@ const CHECKS = {
   d5: () => {
     const data = read('data.ts') || readAll(walk('data', '.ts'));
     const text = specText();
-    const leaks = ['standard_user', 'secret_sauce', 'locked_out_user', 'Sauce Labs'].filter((s) => text.includes(s));
+    const leaks = ['standard_user', 'secret_sauce', 'locked_out_user', 'Sauce Labs'].filter((s) =>
+      text.includes(s),
+    );
     return [
       rule(data.length > 0, 'есть data.ts'),
       rule(/export\s+(const|function)/.test(data), 'данные экспортируются'),
       rule(/export\s+function/.test(data), 'есть фабрика данных'),
-      rule(leaks.length === 0, leaks.length ? `литералы в тестах: ${leaks.join(', ')}` : 'магических строк в тестах нет'),
+      rule(
+        leaks.length === 0,
+        leaks.length ? `литералы в тестах: ${leaks.join(', ')}` : 'магических строк в тестах нет',
+      ),
     ];
   },
 
@@ -200,14 +243,24 @@ const CHECKS = {
     const n = countTests(readAll(viaPom));
     return [
       rule(n >= 10, `тестов на POM: ${n} (нужно 10+)`),
-      rule(!/page\.getByPlaceholder\(\s*['"]Username/.test(text), 'в тестах нет прямых локаторов формы логина'),
+      rule(
+        !/page\.getByPlaceholder\(\s*['"]Username/.test(text),
+        'в тестах нет прямых локаторов формы логина',
+      ),
       rule(/[Аа]рхитектур|[Aa]rchitecture/.test(readme()), 'в README есть раздел «Архитектура»'),
-      rule(exists('pages') && (exists('fixtures.ts') || exists('src/fixtures.ts')), 'структура pages/ + fixtures.ts на месте'),
+      rule(
+        exists('pages') && (exists('fixtures.ts') || exists('src/fixtures.ts')),
+        'структура pages/ + fixtures.ts на месте',
+      ),
     ];
   },
 
   e1: () => {
-    const api = testFiles().filter((f) => /\{\s*request\s*\}|\brequest\b/.test(read(f)) && /request\.(get|post|put|delete)/.test(read(f)));
+    const api = testFiles().filter(
+      (f) =>
+        /\{\s*request\s*\}|\brequest\b/.test(read(f)) &&
+        /request\.(get|post|put|delete)/.test(read(f)),
+    );
     const text = readAll(api);
     return [
       rule(api.length > 0, `API-файлов: ${api.length}`, 'создай tests/api-*.spec.ts'),
@@ -225,7 +278,11 @@ const CHECKS = {
       rule(fx.length > 0, 'есть api-fixtures.ts'),
       rule(/newContext\(/.test(fx), 'создаётся свой APIRequestContext'),
       rule(/dispose\(\)/.test(fx), 'контекст закрывается через dispose()'),
-      rule(!/https?:\/\//.test(apiTests), 'в API-тестах нет полных URL', 'вынеси хост в baseURL контекста'),
+      rule(
+        !/https?:\/\//.test(apiTests),
+        'в API-тестах нет полных URL',
+        'вынеси хост в baseURL контекста',
+      ),
       rule(/API-тест|API tests/i.test(readme()), 'в README есть раздел про выбор'),
     ];
   },
@@ -248,20 +305,37 @@ const CHECKS = {
   e4: () => {
     const fx = readAll(walk('tests', '.ts')).concat(read('fixtures.ts'), read('api-fixtures.ts'));
     return [
-      rule(/base\.extend/.test(fx) && /request|Api\b/.test(fx), 'есть фикстура подготовки данных через API'),
-      rule(/await\s+use\([\s\S]{0,400}?\n[\s\S]{0,400}?(remove|delete)/i.test(fx), 'есть уборка после use()', 'удаляй созданную сущность после теста'),
+      rule(
+        /base\.extend/.test(fx) && /request|Api\b/.test(fx),
+        'есть фикстура подготовки данных через API',
+      ),
+      rule(
+        /await\s+use\([\s\S]{0,400}?\n[\s\S]{0,400}?(remove|delete)/i.test(fx),
+        'есть уборка после use()',
+        'удаляй созданную сущность после теста',
+      ),
       rule(/Date\.now\(\)|randomUUID|workerIndex/.test(fx), 'данные уникальны'),
-      rule(/[Пп]одготовка данных|[Dd]ata setup/.test(readme()), 'в README есть раздел про подготовку данных'),
+      rule(
+        /[Пп]одготовка данных|[Dd]ata setup/.test(readme()),
+        'в README есть раздел про подготовку данных',
+      ),
     ];
   },
 
   f1: () => {
     const wf = readAll(workflows());
     return [
-      rule(workflows().length > 0, `воркфлоу: ${workflows().length}`, 'создай .github/workflows/tests.yml'),
+      rule(
+        workflows().length > 0,
+        `воркфлоу: ${workflows().length}`,
+        'создай .github/workflows/tests.yml',
+      ),
       rule(/npm ci/.test(wf), 'используется npm ci'),
       rule(/playwright install/.test(wf), 'ставятся браузеры'),
-      rule(/upload-artifact/.test(wf) && /cancelled\(\)|always\(\)/.test(wf), 'отчёт грузится и при падении'),
+      rule(
+        /upload-artifact/.test(wf) && /cancelled\(\)|always\(\)/.test(wf),
+        'отчёт грузится и при падении',
+      ),
       rule(/badge\.svg/.test(readme()), 'бейдж в README'),
     ];
   },
@@ -271,8 +345,14 @@ const CHECKS = {
     const src = readAll(walk('tests', '.ts').concat(walk('pages', '.ts')));
     return [
       rule(git('ls-files package-lock.json').trim() !== '', 'package-lock.json в репозитории'),
-      rule(/node_modules/.test(gi) && /test-results/.test(gi) && /playwright-report/.test(gi), 'артефакты в .gitignore'),
-      rule(git('ls-files test-results playwright-report node_modules').trim() === '', 'артефакты не в индексе git'),
+      rule(
+        /node_modules/.test(gi) && /test-results/.test(gi) && /playwright-report/.test(gi),
+        'артефакты в .gitignore',
+      ),
+      rule(
+        git('ls-files test-results playwright-report node_modules').trim() === '',
+        'артефакты не в индексе git',
+      ),
       rule(!/[A-Z]:\\\\|[A-Z]:\//.test(src), 'нет абсолютных путей в исходниках'),
       rule(/[Кк]ак запустить|## Run|npm ci/.test(readme()), 'в README есть инструкция запуска'),
     ];
@@ -306,9 +386,16 @@ const CHECKS = {
     return [
       rule(df.length > 0, 'есть Dockerfile'),
       rule(/mcr\.microsoft\.com\/playwright/.test(df), 'используется официальный образ'),
-      rule(!version || df.includes(version), `тег образа совпадает с версией Playwright (${version})`, 'иначе Playwright ругается на версию браузеров'),
+      rule(
+        !version || df.includes(version),
+        `тег образа совпадает с версией Playwright (${version})`,
+        'иначе Playwright ругается на версию браузеров',
+      ),
       rule(/node_modules/.test(read('.dockerignore')), 'node_modules в .dockerignore'),
-      rule(Object.keys(p.scripts || {}).some((s) => s.startsWith('docker')), 'есть npm-скрипты docker:*'),
+      rule(
+        Object.keys(p.scripts || {}).some((s) => s.startsWith('docker')),
+        'есть npm-скрипты docker:*',
+      ),
     ];
   },
 
@@ -348,9 +435,15 @@ const CHECKS = {
     const p = pkg();
     return [
       rule(n >= 40, `тестов: ${n} (нужно 40+)`),
-      rule(/@smoke/.test(text) && /@regression/.test(text) && /@negative/.test(text), 'есть все три категории тегов'),
+      rule(
+        /@smoke/.test(text) && /@regression/.test(text) && /@negative/.test(text),
+        'есть все три категории тегов',
+      ),
       rule(smoke > 0 && smoke <= Math.ceil(n * 0.2), `smoke: ${smoke} — не больше 20% набора`),
-      rule(Object.keys(p.scripts || {}).some((s) => s.startsWith('test:')), 'есть npm-скрипты по категориям'),
+      rule(
+        Object.keys(p.scripts || {}).some((s) => s.startsWith('test:')),
+        'есть npm-скрипты по категориям',
+      ),
     ];
   },
 
@@ -374,7 +467,11 @@ const CHECKS = {
       rule(files.length >= 3, `flaky-разборов: ${files.length} (нужно 3+)`),
       rule(/Гипотез|Hypoth/i.test(text), 'есть гипотезы'),
       rule(/\d+\s*(из|of|\/)\s*\d+/.test(text), 'есть числовая оценка частоты'),
-      rule(!/test\.skip\(\s*['"`]/.test(specText()), 'нет test.skip без объяснения', 'используй test.fixme и запись в docs/'),
+      rule(
+        !/test\.skip\(\s*['"`]/.test(specText()),
+        'нет test.skip без объяснения',
+        'используй test.fixme и запись в docs/',
+      ),
     ];
   },
 
@@ -386,9 +483,15 @@ const CHECKS = {
     return [
       rule(plan.length > 0, 'есть docs/test-plan.md'),
       rule(/\|.*\|/.test(plan), 'есть матрица покрытия'),
-      rule(/эквивалент|границ|состояни|equivalence|boundar|transition/i.test(plan), 'названы техники тест-дизайна'),
+      rule(
+        /эквивалент|границ|состояни|equivalence|boundar|transition/i.test(plan),
+        'названы техники тест-дизайна',
+      ),
       rule(/[Нн]е автоматизир|Not automated/.test(plan), 'есть раздел «не автоматизировано»'),
-      rule(sum === 0 || Math.abs(sum - actual) <= 2, `числа в плане сходятся с репозиторием (план ${sum}, факт ${actual})`),
+      rule(
+        sum === 0 || Math.abs(sum - actual) <= 2,
+        `числа в плане сходятся с репозиторием (план ${sum}, факт ${actual})`,
+      ),
       rule(/test-plan/.test(readme()), 'ссылка на план из README'),
     ];
   },
@@ -422,21 +525,44 @@ for (const item of targets) {
 
 // общие проверки
 const dirty = git('status --porcelain').trim();
-console.log(`\n${dirty ? 'ВНИМАНИЕ' : 'OK'}  git status: ${dirty ? 'есть незакоммиченное' : 'чисто'}`);
+console.log(
+  `\n${dirty ? 'ВНИМАНИЕ' : 'OK'}  git status: ${dirty ? 'есть незакоммиченное' : 'чисто'}`,
+);
 if (dirty) {
-  console.log(dirty.split('\n').map((l) => `  ${l}`).join('\n'));
+  console.log(
+    dirty
+      .split('\n')
+      .map((l) => `  ${l}`)
+      .join('\n'),
+  );
   console.log('  → незакоммиченный кусок и есть долг: коммить как есть, даже сломанное');
 }
 
 if (withRun) {
   console.log('\n— tsc --noEmit');
   const tsc = tryRun('npx tsc --noEmit');
-  console.log(tsc.ok ? '  PASS' : `  FAIL\n${tsc.out.split('\n').slice(0, 15).map((l) => '  ' + l).join('\n')}`);
+  console.log(
+    tsc.ok
+      ? '  PASS'
+      : `  FAIL\n${tsc.out
+          .split('\n')
+          .slice(0, 15)
+          .map((l) => '  ' + l)
+          .join('\n')}`,
+  );
   if (!tsc.ok) failed += 1;
 
   console.log('\n— npx playwright test');
   const t = tryRun('npx playwright test --reporter=line');
-  console.log(t.ok ? '  PASS' : `  FAIL\n${t.out.split('\n').slice(-15).map((l) => '  ' + l).join('\n')}`);
+  console.log(
+    t.ok
+      ? '  PASS'
+      : `  FAIL\n${t.out
+          .split('\n')
+          .slice(-15)
+          .map((l) => '  ' + l)
+          .join('\n')}`,
+  );
   if (!t.ok) failed += 1;
 } else {
   console.log('\nПрогон тестов и tsc не выполнялся. Нужен — добавь --run.');
