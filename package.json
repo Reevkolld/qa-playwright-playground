@@ -4,7 +4,36 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "check:no-wait-timeout": "node scripts/check-no-wait-timeout.js"
+    "check:no-wait-timeout": "node scripts/check-no-wait-timeout.js",
+    "test": "playwright test",
+    "check": "node scripts/check.js",
+    "check:b12": "node scripts/check.js b12",
+    "check:c1": "node scripts/check.js c1",
+    "check:c2": "node scripts/check.js c2",
+    "check:c3": "node scripts/check.js c3",
+    "check:c4": "node scripts/check.js c4",
+    "check:d1": "node scripts/check.js d1",
+    "check:d2": "node scripts/check.js d2",
+    "check:d3": "node scripts/check.js d3",
+    "check:d4": "node scripts/check.js d4",
+    "check:d5": "node scripts/check.js d5",
+    "check:d6": "node scripts/check.js d6",
+    "check:e1": "node scripts/check.js e1",
+    "check:e2": "node scripts/check.js e2",
+    "check:e3": "node scripts/check.js e3",
+    "check:e4": "node scripts/check.js e4",
+    "check:f1": "node scripts/check.js f1",
+    "check:f2": "node scripts/check.js f2",
+    "check:f3": "node scripts/check.js f3",
+    "check:f4": "node scripts/check.js f4",
+    "check:f5": "node scripts/check.js f5",
+    "check:f6": "node scripts/check.js f6",
+    "check:g1": "node scripts/check.js g1",
+    "check:g2": "node scripts/check.js g2",
+    "check:g3": "node scripts/check.js g3",
+    "check:g4": "node scripts/check.js g4",
+    "check:g5": "node scripts/check.js g5",
+    "check:g6": "node scripts/check.js g6"
   },
   "keywords": [],
   "type": "commonjs",
@@ -12,5 +41,8 @@
     "@playwright/test": "^1.62.1",
     "@types/node": "^26.1.2",
     "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
