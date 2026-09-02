@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('login value, products visible, inventory count', async ({ page }) => {
+test('default state, check first checkbox, unchech second', async ({ page }) => {
     await page.goto('https://the-internet.herokuapp.com/');
 
     await page.getByText('Checkboxes').click();
