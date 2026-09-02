@@ -34,12 +34,15 @@ npm run check:no-wait-timeout
 | `saucedemo-product-link.spec.ts`      | Переход по ссылке товара (`getByRole('link')`), проверка целевой страницы 
 | `saucedemo-product-filter.spec.ts`    | Поиск карточки товара через `filter({ hasText })`, добавление в корзину, проверка бейджа  корзины и смены кнопки на «Remove» 
 | `saucedemo-assertions.spec.ts`        | Покрытие `toHaveValue` (значение поля логина) и `toHaveCount` (число карточек в инвентаре) |
+| `saucedemo-cart.spec.ts`              | Добавление двух товаров в корзину, удаление товара (бейдж пропадает), сортировка Z→A меняет первый товар в списке |
 
-Во всех тестах локаторы — только `getBy*` (роль, текст, placeholder, test-id), без CSS/XPath-селекторов.
+Во всех тестах локаторы — только `getBy*`/`byTestId` (роль, текст, placeholder, test-id), без CSS/XPath-селекторов по классам.
 
 ## Особенности конфига
 
-`playwright.config.ts` содержит `testIdAttribute: 'data-test'` — saucedemo использует атрибут `data-test`, а не стандартный для Playwright `data-testid`. Без этой настройки `getByTestId()` ничего не находит.
+saucedemo использует атрибут `data-test`, а не стандартный для Playwright `data-testid`. `playwright.config.ts` содержит `use.testIdAttribute: 'data-test'` по документации Playwright — но на практике `page.getByTestId()` всё равно не находит элементы (проверено: `page.locator('[data-test="..."]')` находит то же самое, `getByTestId()` с тем же значением — нет). Причина не выяснена.
+
+Обходной путь — `tests/utils/by-test-id.ts`, функция `byTestId(page, id)`, использовать вместо `page.getByTestId()` везде в этом репозитории.
 
 ## Стек
 
