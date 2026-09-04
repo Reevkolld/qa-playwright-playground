@@ -15,7 +15,7 @@ test.describe('heroku: login', () => {
 
     await expect(page).toHaveURL(`${BASE}/secure`);
     await expect(page.getByText('You logged into a secure area!')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Secure Area', exact: true})).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Secure Area', exact: true })).toBeVisible();
     await expect(
       page.getByRole('heading', {
         name: 'Welcome to the Secure Area. When you are done click logout below.',
