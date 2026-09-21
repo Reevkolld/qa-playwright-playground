@@ -1,23 +1,38 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
+import { LoginPage } from '../pages/login.page';
 
-test('negative test case - wrong password', async ({ page }) => {
-  await page.goto('https://www.saucedemo.com/');
+test('shows an error for a locked out user', async ({ page }) => {
+  const loginPage = new LoginPage(page);
 
-  await page.getByPlaceholder('Username').fill('standard_user');
-  await page.getByPlaceholder('Password').fill('qwe123');
-  await page.getByRole('button', { name: 'Login' }).click();
-  await expect(
-    page.getByText('Epic sadface: Username and password do not match any user in this service'),
-  ).toBeVisible();
+  await loginPage.open();
+  await loginPage.login('locked_out_user', 'secret_sauce');
+
+  await loginPage.expectError('Sorry, this user has been locked out');
 });
 
-test('negative test case - locked user', async ({ page }) => {
-  await page.goto('https://www.saucedemo.com/');
+test('shows an error when username is empty', async ({ page }) => {
+  const loginPage = new LoginPage(page);
 
-  await page.getByPlaceholder('Username').fill('locked_out_user');
-  await page.getByPlaceholder('Password').fill('secret_sauce');
+  await loginPage.open();
+  await loginPage.login('', 'secret_sauce');
 
-  await page.getByRole('button', { name: 'Login' }).click();
+  await loginPage.expectError('Username is required');
+});
 
-  await expect(page.getByText('Epic sadface: Sorry, this user has been locked out.')).toBeVisible();
+test('shows an error when password is empty', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+
+  await loginPage.open();
+  await loginPage.login('standard_user', '');
+
+  await loginPage.expectError('Password is required');
+});
+
+test('shows an error for invalid credentials', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+
+  await loginPage.open();
+  await loginPage.login('invalid_user', 'invalid_password');
+
+  await loginPage.expectError('Username and password do not match');
 });

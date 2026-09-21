@@ -1,12 +1,50 @@
 import { test, expect } from '@playwright/test';
+import { LoginPage } from '../pages/login.page';
 
-test('successful login test', async ({ page }) => {
-  await page.goto('https://www.saucedemo.com/');
+const BASE = 'https://www.saucedemo.com/';
 
-  await page.getByPlaceholder('Username').fill('standard_user');
-  await page.getByPlaceholder('Password').fill('secret_sauce');
+test('logs in with valid credentials and lands on the inventory page', async ({ page }) => {
+  const loginPage = new LoginPage(page);
 
-  await page.getByRole('button', { name: 'Login' }).click();
+  await loginPage.open();
 
-  await expect(page).toHaveURL('https://www.saucedemo.com/inventory.html');
+  await loginPage.login("standard_user","secret_sauce");
+
+  await expect(page).toHaveURL(`${BASE}inventory.html`);
+});
+
+test('shows an error for a locked out user', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+
+  await loginPage.open();
+  await loginPage.login('locked_out_user', 'secret_sauce');
+
+  await loginPage.expectError('Sorry, this user has been locked out');
+});
+
+test('shows an error when username is empty', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+
+  await loginPage.open();
+  await loginPage.login('', 'secret_sauce');
+
+  await loginPage.expectError('Username is required');
+});
+
+test('shows an error when password is empty', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+
+  await loginPage.open();
+  await loginPage.login('standard_user', '');
+
+  await loginPage.expectError('Password is required');
+});
+
+test('shows an error for invalid credentials', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+
+  await loginPage.open();
+  await loginPage.login('invalid_user', 'invalid_password');
+
+  await loginPage.expectError('Username and password do not match');
 });
