@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import { CartPage } from '../pages/cart.page';
 import { InventoryPage } from '../pages/inventory.page';
 import { LoginPage } from '../pages/login.page';
@@ -18,8 +18,8 @@ test('two items added to cart are visible on cart page', async ({ page }) => {
 
   await cartPage.expectLoaded();
   await cartPage.expectItemCount(2);
-  await expect(cartPage.item('Sauce Labs Backpack')).toBeVisible();
-  await expect(cartPage.item('Sauce Labs Bike Light')).toBeVisible();
+  await cartPage.expectItemVisible('Sauce Labs Backpack');
+  await cartPage.expectItemVisible('Sauce Labs Bike Light');
 });
 
 test('remove item clears cart badge', async ({ page }) => {
@@ -31,6 +31,6 @@ test('remove item clears cart badge', async ({ page }) => {
   await inventoryPage.addToCart('Sauce Labs Backpack');
   await inventoryPage.expectCartCount(1);
 
-  await inventoryPage.card('Sauce Labs Backpack').getByRole('button', { name: 'Remove' }).click();
-  await expect(inventoryPage.cartBadge).not.toBeVisible();
+  await inventoryPage.removeFromCart('Sauce Labs Backpack');
+  await inventoryPage.expectCartIsEmpty();
 });

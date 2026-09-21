@@ -1,16 +1,16 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
+import { InventoryPage } from '../pages/inventory.page';
 import { LoginPage } from '../pages/login.page';
-
-const BASE = 'https://www.saucedemo.com/';
 
 test('logs in with valid credentials and lands on the inventory page', async ({ page }) => {
   const loginPage = new LoginPage(page);
+  const inventoryPage = new InventoryPage(page);
 
   await loginPage.open();
 
-  await loginPage.login("standard_user","secret_sauce");
+  await loginPage.login('standard_user', 'secret_sauce');
 
-  await expect(page).toHaveURL(`${BASE}inventory.html`);
+  await inventoryPage.expectLoaded();
 });
 
 test('shows an error for a locked out user', async ({ page }) => {

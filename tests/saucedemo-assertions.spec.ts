@@ -1,16 +1,16 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
+import { InventoryPage } from '../pages/inventory.page';
+import { LoginPage } from '../pages/login.page';
 
 test('login value, products visible, inventory count', async ({ page }) => {
-  await page.goto('https://www.saucedemo.com/');
+  const loginPage = new LoginPage(page);
+  const inventoryPage = new InventoryPage(page);
 
-  await page.getByPlaceholder('Username').fill('standard_user');
-  await page.getByPlaceholder('Password').fill('secret_sauce');
+  await loginPage.open();
+  await loginPage.fillCredentials('standard_user', 'secret_sauce');
+  await loginPage.expectUsernameValue('standard_user');
+  await loginPage.submit();
 
-  await expect(page.getByPlaceholder('Username')).toHaveValue('standard_user');
-
-  await page.getByRole('button', { name: 'Login' }).click();
-
-  await expect(page.getByText('Products')).toBeVisible();
-
-  await expect(page.locator('.inventory_item')).toHaveCount(6);
+  await inventoryPage.expectProductsVisible();
+  await inventoryPage.expectProductCount(6);
 });
