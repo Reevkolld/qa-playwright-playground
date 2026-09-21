@@ -2,7 +2,7 @@ import { Locator, expect } from '@playwright/test';
 import { BasePage } from './base.page';
 
 export class CartPage extends BasePage {
-  protected readonly path = 'https://www.saucedemo.com/cart.html';
+  protected readonly url = 'https://www.saucedemo.com/cart.html';
 
   items(): Locator {
     return this.byTestId('inventory-item');
@@ -18,5 +18,9 @@ export class CartPage extends BasePage {
 
   async expectItemCount(count: number): Promise<void> {
     await expect(this.items()).toHaveCount(count);
+  }
+
+  async expectItemVisible(name: string): Promise<void> {
+    await expect(this.item(name)).toBeVisible();
   }
 }
