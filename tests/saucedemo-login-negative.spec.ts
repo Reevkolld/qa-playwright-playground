@@ -1,6 +1,8 @@
 import { test } from '@playwright/test';
 import { LoginPage } from '../pages/login.page';
 
+test.use({ storageState: { cookies: [], origins: [] } });
+
 test('shows an error for a locked out user', async ({ page }) => {
   const loginPage = new LoginPage(page);
 

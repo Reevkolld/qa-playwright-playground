@@ -5,7 +5,7 @@ export class InventoryPage extends BasePage {
   protected readonly url = 'https://www.saucedemo.com/inventory.html';
 
   get cartBadge(): Locator {
-    return this.byTestId('shopping-cart-badge');
+    return this.page.locator('[data-test="shopping-cart-badge"]');
   }
 
   get productsHeading(): Locator {
@@ -13,19 +13,19 @@ export class InventoryPage extends BasePage {
   }
 
   get sortSelect(): Locator {
-    return this.byTestId('product-sort-container');
+    return this.page.locator('[data-test="product-sort-container"]');
   }
 
   card(name: string): Locator {
-    return this.byTestId('inventory-item').filter({ hasText: name });
+    return this.page.locator('[data-test="inventory-item"]').filter({ hasText: name });
   }
 
   items(): Locator {
-    return this.byTestId('inventory-item');
+    return this.page.locator('[data-test="inventory-item"]');
   }
 
   firstCard(): Locator {
-    return this.byTestId('inventory-item').first();
+    return this.page.locator('[data-test="inventory-item"]').first();
   }
 
   async addToCart(name: string): Promise<void> {
@@ -44,7 +44,7 @@ export class InventoryPage extends BasePage {
   }
 
   async openCart(): Promise<void> {
-    await this.byTestId('shopping-cart-link').click();
+    await this.page.locator('[data-test="shopping-cart-link"]').click();
   }
 
   async sortBy(value: string): Promise<void> {

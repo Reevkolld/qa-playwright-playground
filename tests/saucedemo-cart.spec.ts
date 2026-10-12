@@ -1,6 +1,7 @@
 import { test } from '../fixtures/fixtures';
 
 test('two items added to cart are visible on cart page', async ({ loggedInInventory: inventoryPage, cartPage }) => {
+  await inventoryPage.open();
   await inventoryPage.addToCart('Sauce Labs Backpack');
   await inventoryPage.addToCart('Sauce Labs Bike Light');
   await inventoryPage.openCart();
@@ -12,6 +13,7 @@ test('two items added to cart are visible on cart page', async ({ loggedInInvent
 });
 
 test('remove item clears cart badge', async ({ loggedInInventory: inventoryPage }) => {
+  await inventoryPage.open();
   await inventoryPage.addToCart('Sauce Labs Backpack');
   await inventoryPage.expectCartCount(1);
 

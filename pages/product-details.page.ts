@@ -11,7 +11,7 @@ export class ProductDetailsPage extends BasePage {
   }
 
   async expectProductVisible(name: string): Promise<void> {
-    await expect(this.byTestId('inventory-item-name')).toHaveText(name);
+    await expect(this.page.locator('[data-test="inventory-item-name"]')).toHaveText(name);
   }
 
   async addToCart(): Promise<void> {
@@ -23,6 +23,6 @@ export class ProductDetailsPage extends BasePage {
   }
 
   async expectCartCount(count: number): Promise<void> {
-    await expect(this.byTestId('shopping-cart-badge')).toHaveText(String(count));
+    await expect(this.page.locator('[data-test="shopping-cart-badge"]')).toHaveText(String(count));
   }
 }

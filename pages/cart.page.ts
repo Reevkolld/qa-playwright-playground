@@ -5,7 +5,7 @@ export class CartPage extends BasePage {
   protected readonly url = 'https://www.saucedemo.com/cart.html';
 
   items(): Locator {
-    return this.byTestId('inventory-item');
+    return this.page.locator('[data-test="inventory-item"]');
   }
 
   item(name: string): Locator {

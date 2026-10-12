@@ -20,10 +20,7 @@ export const test = base.extend<{
   cartPage: async ({ page }, use) => {
     await use(new CartPage(page));
   },
-  loggedInInventory: async ({ loginPage, inventoryPage }, use) => {
-    await loginPage.open();
-    await loginPage.login('standard_user', 'secret_sauce');
-    await inventoryPage.expectLoaded();
+  loggedInInventory: async ({ inventoryPage }, use) => {
     await use(inventoryPage);
   },
 });

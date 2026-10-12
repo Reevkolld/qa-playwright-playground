@@ -2,6 +2,8 @@ import { test } from '@playwright/test';
 import { InventoryPage } from '../pages/inventory.page';
 import { LoginPage } from '../pages/login.page';
 
+test.use({ storageState: { cookies: [], origins: [] } });
+
 test('login value, products visible, inventory count', async ({ page }) => {
   const loginPage = new LoginPage(page);
   const inventoryPage = new InventoryPage(page);

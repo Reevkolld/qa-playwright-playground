@@ -19,7 +19,6 @@ export default defineConfig({
 
   use: {
     trace: 'on-first-retry',
-    testIdAttribute: 'data-test',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     actionTimeout: 10_000,
@@ -28,8 +27,17 @@ export default defineConfig({
 
   projects: [
     {
+      name: 'setup',
+      testMatch: /auth\.setup\.ts/,
+    },
+    {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      testIgnore: /auth\.setup\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
     },
   ],
 });

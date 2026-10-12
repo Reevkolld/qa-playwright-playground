@@ -18,6 +18,16 @@ npx playwright test --debug         # пошаговая отладка чере
 npx playwright test tests/имя-файла.spec.ts   # один файл
 ```
 
+## Аутентификация
+
+В `playwright.config.ts` настроены два проекта:
+
+- `setup` запускает `tests/auth.setup.ts`: входит в SauceDemo как `standard_user` и сохраняет состояние браузера в `playwright/.auth/user.json`.
+- `chromium` зависит от `setup` и использует сохранённый `storageState`. Поэтому сценарии каталога и корзины начинают работу в авторизованной сессии. Фикстура `loggedInInventory` только предоставляет `InventoryPage`; логин внутри неё не выполняется.
+Тестам, которые проверяют сам вход в SauceDemo, нужна чистая сессия: `saucedemo-login.spec.ts`, `saucedemo-login-negative.spec.ts` и `saucedemo-assertions.spec.ts` задают пустые `cookies` и `origins` через `test.use()`.
+
+Файл `playwright/.auth/user.json` содержит сохранённое состояние авторизации и исключён из Git через `.gitignore`. Для запуска всех тестов используется `npx playwright test`; основной проект можно запустить отдельно флагом `--project=chromium`.
+
 Проверка, что в тестах нет `waitForTimeout` (антипаттерн — ожидание вслепую):
 
 ```bash
@@ -36,13 +46,7 @@ npm run check:no-wait-timeout
 | `saucedemo-assertions.spec.ts` | Покрытие `toHaveValue` (значение поля логина) и `toHaveCount` (число карточек в инвентаре) |
 | `saucedemo-cart.spec.ts` | Добавление двух товаров в корзину, удаление товара (бейдж пропадает), сортировка Z→A меняет первый товар в списке |
 
-Во всех тестах локаторы — только `getBy*`/`byTestId` (роль, текст, placeholder, test-id), без CSS/XPath-селекторов по классам.
-
-## Особенности конфига
-
-saucedemo использует атрибут `data-test`, а не стандартный для Playwright `data-testid`. `playwright.config.ts` содержит `use.testIdAttribute: 'data-test'` по документации Playwright — но на практике `page.getByTestId()` всё равно не находит элементы (проверено: `page.locator('[data-test="..."]')` находит то же самое, `getByTestId()` с тем же значением — нет). Причина не выяснена.
-
-Обходной путь — `tests/utils/by-test-id.ts`, функция `byTestId(page, id)`, использовать вместо `page.getByTestId()` везде в этом репозитории.
+Для семантических элементов используются `getBy*`-локаторы, а атрибуты SauceDemo `data-test` выбираются напрямую через `page.locator('[data-test="..."]')`.
 
 ## Стек
 
