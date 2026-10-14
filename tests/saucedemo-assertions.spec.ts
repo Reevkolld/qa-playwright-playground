@@ -1,4 +1,5 @@
 import { test } from '@playwright/test';
+import { users } from '../data';
 import { InventoryPage } from '../pages/inventory.page';
 import { LoginPage } from '../pages/login.page';
 
@@ -9,8 +10,8 @@ test('login value, products visible, inventory count', async ({ page }) => {
   const inventoryPage = new InventoryPage(page);
 
   await loginPage.open();
-  await loginPage.fillCredentials('standard_user', 'secret_sauce');
-  await loginPage.expectUsernameValue('standard_user');
+  await loginPage.fillCredentials(users.standard.username, users.standard.password);
+  await loginPage.expectUsernameValue(users.standard.username);
   await loginPage.submit();
 
   await inventoryPage.expectProductsVisible();

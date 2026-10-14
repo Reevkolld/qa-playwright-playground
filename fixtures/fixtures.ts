@@ -1,5 +1,6 @@
 import { expect, test as base } from '@playwright/test';
 import { CartPage } from '../pages/cart.page';
+import { CheckoutPage } from '../pages/checkout.page';
 import { InventoryPage } from '../pages/inventory.page';
 import { LoginPage } from '../pages/login.page';
 
@@ -9,6 +10,7 @@ export const test = base.extend<{
   loginPage: LoginPage;
   inventoryPage: InventoryPage;
   cartPage: CartPage;
+  checkoutPage: CheckoutPage;
   loggedInInventory: InventoryPage;
 }>({
   loginPage: async ({ page }, use) => {
@@ -19,6 +21,9 @@ export const test = base.extend<{
   },
   cartPage: async ({ page }, use) => {
     await use(new CartPage(page));
+  },
+  checkoutPage: async ({ page }, use) => {
+    await use(new CheckoutPage(page));
   },
   loggedInInventory: async ({ inventoryPage }, use) => {
     await use(inventoryPage);

@@ -1,6 +1,7 @@
 import { mkdir } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { test } from '@playwright/test';
+import { users } from '../data';
 import { InventoryPage } from '../pages/inventory.page';
 import { LoginPage } from '../pages/login.page';
 
@@ -11,7 +12,7 @@ test('authenticate', async ({ page }) => {
   const inventoryPage = new InventoryPage(page);
 
   await loginPage.open();
-  await loginPage.login('standard_user', 'secret_sauce');
+  await loginPage.login(users.standard.username, users.standard.password);
   await inventoryPage.expectLoaded();
 
   await mkdir(dirname(authFile), { recursive: true });

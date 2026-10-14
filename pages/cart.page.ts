@@ -16,6 +16,10 @@ export class CartPage extends BasePage {
     await this.items().filter({ hasText: name }).getByRole('button', { name: 'Remove' }).click();
   }
 
+  async checkout(): Promise<void> {
+    await this.page.locator('[data-test="checkout"]').click();
+  }
+
   async expectItemCount(count: number): Promise<void> {
     await expect(this.items()).toHaveCount(count);
   }

@@ -1,11 +1,15 @@
 import { test } from '../fixtures/fixtures';
+import { products } from '../data';
 import { ProductDetailsPage } from '../pages/product-details.page';
 
-test('locate card via filter, add to cart, verify state', async ({ page, loggedInInventory: inventoryPage }) => {
+test('locate card via filter, add to cart, verify state', async ({
+  page,
+  loggedInInventory: inventoryPage,
+}) => {
   const productDetailsPage = new ProductDetailsPage(page);
 
   await inventoryPage.open();
-  await inventoryPage.openProduct('Test.allTheThings() T-Shirt (Red)');
+  await inventoryPage.openProduct(products.redTShirt);
   await productDetailsPage.expectLoaded(3);
 
   await productDetailsPage.addToCart();
